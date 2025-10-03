@@ -311,7 +311,6 @@ export class Calculator {
       this.result = result.toString();
       this.isNewExpression = true;
       
-      console.log('calculate() - result:', result, 'this.result:', this.result, 'this.lastResult:', this.lastResult);
       
       return {
         expression: this.expression,
@@ -378,7 +377,6 @@ export class Calculator {
       expression: this.expression || '0',
       result: result
     };
-    console.log('getDisplayState:', state, 'this.result:', this.result, 'this.lastResult:', this.lastResult);
     return state;
   }
 
