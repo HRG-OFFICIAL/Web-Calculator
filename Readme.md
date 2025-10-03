@@ -5,10 +5,10 @@ A modern, feature-rich scientific calculator built with vanilla JavaScript, feat
 ## 📸 Screenshots
 
 ### Light Theme
-![Calculator Light Theme](screenshots/calculator-light-theme.png)
+![Calculator Light Theme](./screenshots/calculator-light-theme.png)
 
 ### Dark Theme  
-![Calculator Dark Theme](screenshots/calculator-dark-theme.png)
+![Calculator Dark Theme](./screenshots/calculator-dark-theme.png)
 
 ## ✨ Features
 
