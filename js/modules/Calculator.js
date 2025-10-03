@@ -179,13 +179,15 @@ export class Calculator {
       case 'equals':
         return this.calculate();
       case 'ans':
-        this.appendToExpression('ans');
+        if (this.lastResult !== null) {
+          this.appendNumber(this.lastResult.toString());
+        }
         break;
       case 'memory-clear':
         this.memory = 0;
         break;
       case 'memory-recall':
-        this.appendToExpression(this.memory.toString());
+        this.appendNumber(this.memory.toString());
         break;
       case 'memory-add':
         this.memory += this.lastResult || 0;
@@ -195,7 +197,7 @@ export class Calculator {
         break;
       case 'random':
         const random = Math.random();
-        this.appendToExpression(random.toString());
+        this.appendNumber(random.toString());
         break;
       case 'negate':
         this.negate();
@@ -235,6 +237,7 @@ export class Calculator {
   appendNumber(number) {
     if (this.isNewExpression) {
       this.expression = number;
+      this.result = ''; // Clear the result when starting new expression
       this.isNewExpression = false;
     } else {
       // Prevent multiple decimal points
@@ -252,6 +255,7 @@ export class Calculator {
   appendOperator(operator) {
     if (this.isNewExpression && this.lastResult !== null) {
       this.expression = this.lastResult.toString();
+      this.result = ''; // Clear the result when starting new expression
       this.isNewExpression = false;
     }
     
@@ -366,8 +370,10 @@ export class Calculator {
   }
 
   updateDisplay() {
-    // Update the result to show current expression
-    this.result = this.expression || '0';
+    // Only update result if we don't have a calculated result
+    if (!this.lastResult) {
+      this.result = this.expression || '0';
+    }
   }
 
   setAngleMode(mode) {
