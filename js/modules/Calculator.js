@@ -304,6 +304,7 @@ export class Calculator {
     try {
       const result = this.evaluate(this.expression);
       this.lastResult = result;
+      this.result = result.toString();
       this.isNewExpression = true;
       
       return {
