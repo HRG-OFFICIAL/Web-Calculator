@@ -326,6 +326,7 @@ export class Calculator {
     this.result = '';
     this.lastResult = null;
     this.isNewExpression = true;
+    this.updateDisplay();
   }
 
   clearEntry() {
@@ -333,12 +334,14 @@ export class Calculator {
       this.clear();
     } else {
       this.expression = '';
+      this.updateDisplay();
     }
   }
 
   backspace() {
     if (this.expression.length > 0) {
       this.expression = this.expression.slice(0, -1);
+      this.updateDisplay();
     }
   }
 
