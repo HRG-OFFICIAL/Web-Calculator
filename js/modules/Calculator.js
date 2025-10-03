@@ -363,10 +363,12 @@ export class Calculator {
   }
 
   getDisplayState() {
-    return {
+    const state = {
       expression: this.expression || '0',
       result: this.result || (this.lastResult ? this.lastResult.toString() : '0')
     };
+    console.log('getDisplayState:', state, 'this.result:', this.result, 'this.lastResult:', this.lastResult);
+    return state;
   }
 
   updateDisplay() {
