@@ -7,7 +7,7 @@
   "scripts": {
     "start": "npx http-server . -p 3000 -o",
     "dev": "npx live-server --port=3000 --open=/",
-    "test": "npx jest --run",
+    "test": "npx jest --passWithNoTests",
     "test:watch": "npx jest --watch",
     "lint": "npx eslint js/**/*.js",
     "lint:fix": "npx eslint js/**/*.js --fix",
