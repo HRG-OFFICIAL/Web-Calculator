@@ -38,15 +38,15 @@ export class UIManager {
   }
 
   updateDisplay(displayState) {
-    if (!this.expressionElement || !this.resultElement) return;
+    if (!this.expressionElement || !this.resultElement || !displayState) return;
 
-    const { expression, result } = displayState;
+    const { expression = '0', result = '0' } = displayState;
     
     // Update expression with animation
-    this.animateTextUpdate(this.expressionElement, expression);
+    this.animateTextUpdate(this.expressionElement, String(expression));
     
     // Update result with animation
-    this.animateTextUpdate(this.resultElement, result);
+    this.animateTextUpdate(this.resultElement, String(result));
   }
 
   animateTextUpdate(element, newText) {
@@ -92,7 +92,7 @@ export class UIManager {
     }
   }
 
-  showSuccess(message) {
+  showSuccess() {
     if (!this.resultElement) return;
 
     this.resultElement.classList.add('success');
@@ -239,15 +239,15 @@ export class UIManager {
 
   handleKeyboardAction(action) {
     switch (action) {
-      case 'history-toggle':
-        this.toggleHistoryPanel();
-        break;
-      case 'theme-toggle':
-        // This will be handled by ThemeManager
-        break;
-      case 'clear':
-        this.clearError();
-        break;
+    case 'history-toggle':
+      this.toggleHistoryPanel();
+      break;
+    case 'theme-toggle':
+      // This will be handled by ThemeManager
+      break;
+    case 'clear':
+      this.clearError();
+      break;
     }
   }
 
@@ -259,8 +259,16 @@ export class UIManager {
   }
 
   formatNumber(number) {
+    if (number === null || number === undefined) {
+      return '0';
+    }
+    
     if (typeof number !== 'number') {
-      return number.toString();
+      const parsed = parseFloat(number);
+      if (isNaN(parsed)) {
+        return String(number);
+      }
+      number = parsed;
     }
 
     // Handle very large or very small numbers
@@ -270,7 +278,7 @@ export class UIManager {
 
     // Handle decimal numbers
     if (number % 1 !== 0) {
-      // Limit decimal places
+      // Limit decimal places to prevent display overflow
       const rounded = Math.round(number * 1e10) / 1e10;
       return rounded.toString();
     }
@@ -278,19 +286,7 @@ export class UIManager {
     return number.toString();
   }
 
-  // Show loading state
-  showLoading() {
-    if (this.display) {
-      this.display.classList.add('loading');
-    }
-  }
 
-  // Hide loading state
-  hideLoading() {
-    if (this.display) {
-      this.display.classList.remove('loading');
-    }
-  }
 
   // Show notification
   showNotification(message, type = 'info', duration = 3000) {

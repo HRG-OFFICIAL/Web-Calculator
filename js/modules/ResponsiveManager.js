@@ -15,6 +15,11 @@ export class ResponsiveManager {
     this.isPortrait = false;
     this.deviceType = 'desktop';
     
+    // Bind methods to preserve context for event listeners
+    this.handleResize = this.handleResize.bind(this);
+    this.handleOrientationChange = this.handleOrientationChange.bind(this);
+    this.handleViewportChange = this.handleViewportChange.bind(this);
+    
     // Layout configurations for each breakpoint
     this.layoutConfigs = {
       xs: {
@@ -172,7 +177,6 @@ export class ResponsiveManager {
   detectDeviceType() {
     const userAgent = navigator.userAgent.toLowerCase();
     const width = window.innerWidth;
-    const height = window.innerHeight;
     
     if (/mobile|android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)) {
       this.deviceType = 'mobile';
@@ -191,19 +195,19 @@ export class ResponsiveManager {
   }
 
   setupEventListeners() {
-    window.addEventListener('resize', this.handleResize.bind(this));
-    window.addEventListener('orientationchange', this.handleOrientationChange.bind(this));
+    window.addEventListener('resize', this.handleResize);
+    window.addEventListener('orientationchange', this.handleOrientationChange);
     
     // Listen for viewport changes
     if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', this.handleViewportChange.bind(this));
+      window.visualViewport.addEventListener('resize', this.handleViewportChange);
     }
   }
 
   setupResizeObserver() {
     if (window.ResizeObserver) {
       const resizeObserver = new ResizeObserver(entries => {
-        for (let entry of entries) {
+        for (const entry of entries) {
           this.handleElementResize(entry);
         }
       });
@@ -241,15 +245,15 @@ export class ResponsiveManager {
   }
 
   handleElementResize(entry) {
-    const { width, height } = entry.contentRect;
-    this.updateElementDimensions(width, height);
+    const { width } = entry.contentRect;
+    this.updateElementDimensions(width);
   }
 
-  updateElementDimensions(width, height) {
+  updateElementDimensions(width) {
     // Update CSS custom properties based on actual element dimensions
     const root = document.documentElement;
     root.style.setProperty('--actual-width', `${width}px`);
-    root.style.setProperty('--actual-height', `${height}px`);
+    root.style.setProperty('--actual-height', `${window.innerHeight}px`);
   }
 
   applyCurrentLayout() {
@@ -398,8 +402,9 @@ export class ResponsiveManager {
     this.layoutConfigs[name] = config;
   }
 
-  // Destroy and cleanup
+  // Destroy and cleanup - prevent memory leaks
   destroy() {
+    // Remove event listeners using the bound references
     window.removeEventListener('resize', this.handleResize);
     window.removeEventListener('orientationchange', this.handleOrientationChange);
     
@@ -407,7 +412,14 @@ export class ResponsiveManager {
       window.visualViewport.removeEventListener('resize', this.handleViewportChange);
     }
     
+    // Clean up ResizeObserver
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
+    
     clearTimeout(this.resizeTimeout);
     this.observers = [];
+    this.currentBreakpoint = null;
   }
 }

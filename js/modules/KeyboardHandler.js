@@ -16,25 +16,24 @@ export class KeyboardHandler {
       '.': '.', '(': '(', ')': ')',
       '^': '^', '%': '%',
       
-      // Functions (case insensitive)
+      // Functions (lowercase)
       's': 'sin', 'c': 'cos', 't': 'tan',
       'l': 'log', 'q': 'sqrt', 'e': 'exp',
       'b': 'abs', 'n': 'negate', 'r': 'cbrt',
-      'S': 'sin', 'C': 'cos', 'T': 'tan',
-      'L': 'log', 'Q': 'sqrt', 'E': 'exp',
+      
+      // Functions (uppercase) - resolved conflicts
+      'S': 'sin', 'C': 'cos', 'T': 'theme-toggle',
+      'L': 'log', 'Q': 'sqrt', 'E': 'e', // E for constant e
       'B': 'abs', 'N': 'negate', 'R': 'cbrt',
       
       // Constants
-      'p': 'pi', 'P': 'pi', 'E': 'e',
+      'p': 'pi', 'P': 'pi',
       
       // Memory functions
       'm': 'memory-recall', 'M': 'memory-add',
       
       // History
       'h': 'history-toggle', 'H': 'history-toggle',
-      
-      // Theme
-      'T': 'theme-toggle',
       
       // Other
       'a': 'ans', 'A': 'ans',
@@ -101,7 +100,6 @@ export class KeyboardHandler {
     if (!this.isEnabled) return;
 
     const key = event.key;
-    const code = event.code;
     const ctrlKey = event.ctrlKey;
     const altKey = event.altKey;
     const shiftKey = event.shiftKey;
@@ -142,7 +140,11 @@ export class KeyboardHandler {
     };
   }
 
-  getAction(key, event) {
+  getAction(key) {
+    if (!key || typeof key !== 'string') {
+      return null;
+    }
+
     // Handle case-sensitive mappings
     if (this.keyMappings[key]) {
       return this.keyMappings[key];
@@ -173,7 +175,6 @@ export class KeyboardHandler {
     const altKey = event.altKey;
     const shiftKey = event.shiftKey;
     const metaKey = event.metaKey;
-    const code = event.code;
 
     // Build shortcut string
     let shortcut = '';
@@ -181,52 +182,52 @@ export class KeyboardHandler {
     if (altKey) shortcut += 'Alt+';
     if (shiftKey) shortcut += 'Shift+';
     if (metaKey) shortcut += 'Meta+';
-    shortcut += code;
+    shortcut += event.code;
 
     return this.shortcuts[shortcut] || null;
   }
 
-  handleShortcut(shortcut, event) {
+  handleShortcut(shortcut) {
     switch (shortcut) {
-      case 'clear':
-        this.triggerAction('clear');
-        break;
-      case 'history-toggle':
-        this.triggerAction('history-toggle');
-        break;
-      case 'theme-toggle':
-        this.triggerAction('theme-toggle');
-        break;
-      case 'memory-clear':
-        this.triggerAction('memory-clear');
-        break;
-      case 'memory-recall':
-        this.triggerAction('memory-recall');
-        break;
-      case 'memory-add':
-        this.triggerAction('memory-add');
-        break;
-      case 'memory-subtract':
-        this.triggerAction('memory-subtract');
-        break;
-      case 'export-history':
-        this.triggerAction('export-history');
-        break;
-      case 'import-history':
-        this.triggerAction('import-history');
-        break;
-      case 'print':
-        window.print();
-        break;
-      case 'help':
-        this.showHelp();
-        break;
-      case 'fullscreen':
-        this.toggleFullscreen();
-        break;
-      case 'dev-tools':
-        // Let browser handle F12
-        break;
+    case 'clear':
+      this.triggerAction('clear');
+      break;
+    case 'history-toggle':
+      this.triggerAction('history-toggle');
+      break;
+    case 'theme-toggle':
+      this.triggerAction('theme-toggle');
+      break;
+    case 'memory-clear':
+      this.triggerAction('memory-clear');
+      break;
+    case 'memory-recall':
+      this.triggerAction('memory-recall');
+      break;
+    case 'memory-add':
+      this.triggerAction('memory-add');
+      break;
+    case 'memory-subtract':
+      this.triggerAction('memory-subtract');
+      break;
+    case 'export-history':
+      this.triggerAction('export-history');
+      break;
+    case 'import-history':
+      this.triggerAction('import-history');
+      break;
+    case 'print':
+      window.print();
+      break;
+    case 'help':
+      this.showHelp();
+      break;
+    case 'fullscreen':
+      this.toggleFullscreen();
+      break;
+    case 'dev-tools':
+      // Let browser handle F12
+      break;
     }
   }
 
@@ -240,7 +241,6 @@ export class KeyboardHandler {
 
   shouldPreventDefault(event) {
     const key = event.key;
-    const code = event.code;
     
     // Prevent default for calculator keys
     const calculatorKeys = [

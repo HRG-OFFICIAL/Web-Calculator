@@ -55,7 +55,6 @@ export class ThemeManager {
   }
 
   applyTheme() {
-    const root = document.documentElement;
     const app = document.querySelector('.app');
     
     if (!app) return;

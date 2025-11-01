@@ -10,7 +10,21 @@ export class HistoryManager {
     this.loadHistory();
   }
 
+  /**
+   * Add a calculation to history with duplicate prevention
+   * @param {string} expression - The mathematical expression
+   * @param {number} result - The calculated result
+   */
   addToHistory(expression, result) {
+    // Validate inputs
+    if (!expression || typeof expression !== 'string' || expression.trim() === '') {
+      return;
+    }
+    
+    if (result === null || result === undefined || !isFinite(result)) {
+      return;
+    }
+
     // Check if this exact calculation already exists in history
     const isDuplicate = this.history.some(item => 
       item.expression === expression && item.result === result
@@ -23,7 +37,7 @@ export class HistoryManager {
 
     const historyItem = {
       id: Date.now() + Math.random(), // Unique ID
-      expression: expression,
+      expression: expression.trim(),
       result: result,
       timestamp: new Date().toISOString()
     };

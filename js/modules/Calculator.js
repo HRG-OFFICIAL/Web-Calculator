@@ -12,7 +12,7 @@ export class Calculator {
     this.constants = {
       pi: Math.PI,
       e: Math.E,
-      phi: (1 + Math.sqrt(5)) / 2, // Golden ratio
+      phi: (1 + Math.sqrt(5)) / 2 // Golden ratio
     };
     
     // Supported functions
@@ -47,7 +47,7 @@ export class Calculator {
       reciprocal: (x) => 1 / x,
       square: (x) => x * x,
       cube: (x) => x * x * x,
-      percent: (x) => x / 100,
+      percent: (x) => x / 100
     };
   }
 
@@ -55,16 +55,11 @@ export class Calculator {
     this.updateDisplay();
   }
 
-  // Safe factorial function with validation
+  // Factorial function with proper validation
   factorial(n) {
-    // Convert to number if it's a string
-    const num = typeof n === 'string' ? parseFloat(n) : n;
+    const num = Number(n);
     
-    if (!Number.isFinite(num)) {
-      throw new Error('Factorial requires a finite number');
-    }
-    
-    if (!Number.isInteger(num) || num < 0) {
+    if (!Number.isFinite(num) || !Number.isInteger(num) || num < 0) {
       throw new Error('Factorial is only defined for non-negative integers');
     }
     
@@ -72,7 +67,7 @@ export class Calculator {
       throw new Error('Factorial too large (max 170)');
     }
     
-    if (num === 0 || num === 1) return 1;
+    if (num <= 1) return 1;
     
     let result = 1;
     for (let i = 2; i <= num; i++) {
@@ -81,44 +76,39 @@ export class Calculator {
     return result;
   }
 
-  // Safe evaluation using a parser instead of eval
+  // Safe evaluation using math expression parser
   evaluate(expression) {
     try {
-      // Replace constants
+      // Replace constants first
       let processedExpression = expression
         .replace(/\bpi\b/g, this.constants.pi)
         .replace(/\be\b/g, this.constants.e)
         .replace(/\bphi\b/g, this.constants.phi)
         .replace(/\bans\b/g, this.lastResult || 0);
 
-      // Replace function calls
-      for (const [funcName, func] of Object.entries(this.functions)) {
-        const regex = new RegExp(`\\b${funcName}\\s*\\(`, 'g');
-        processedExpression = processedExpression.replace(regex, `this.functions.${funcName}(`);
-      }
-
-      // Replace operators
+      // Replace operators with JavaScript equivalents
       processedExpression = processedExpression
         .replace(/\^/g, '**')
         .replace(/×/g, '*')
         .replace(/÷/g, '/')
         .replace(/−/g, '-');
 
-      // Validate expression for security
+      // Process function calls safely
+      processedExpression = this.processFunctionCalls(processedExpression);
+
+      // Validate expression for security and correctness
       if (!this.isValidExpression(processedExpression)) {
         throw new Error('Invalid expression');
       }
 
-      // Use Function constructor for safer evaluation than eval
-      const result = new Function('return ' + processedExpression)();
+      // Use safer math evaluation
+      const result = this.safeEvaluate(processedExpression);
       
       if (!isFinite(result)) {
         if (isNaN(result)) {
           throw new Error('Result is not a number');
         } else if (result === Infinity || result === -Infinity) {
           throw new Error('Result is infinite');
-        } else {
-          throw new Error('Result is not a finite number');
         }
       }
 
@@ -128,14 +118,115 @@ export class Calculator {
     }
   }
 
-  // Validate expression to prevent code injection
-  isValidExpression(expression) {
-    // Allow only numbers, operators, parentheses, and function calls
-    const validPattern = /^[0-9+\-*/().\s]*$/;
-    const functionPattern = /this\.functions\.\w+\(/g;
+  // Process function calls with proper validation
+  processFunctionCalls(expression) {
+    let processed = expression;
     
-    // Remove function calls for basic validation
-    let cleanExpression = expression.replace(functionPattern, '');
+    // Handle factorial function specially
+    processed = processed.replace(/\bfactorial\s*\(([^)]+)\)/g, (_, args) => {
+      if (!this.isValidFunctionArgs(args)) {
+        throw new Error('Invalid arguments for factorial');
+      }
+      const num = parseFloat(args);
+      return this.factorial(num).toString();
+    });
+    
+    // Handle other special functions
+    processed = processed.replace(/\breciprocal\s*\(([^)]+)\)/g, (_, args) => {
+      return `(1/(${args}))`;
+    });
+    
+    processed = processed.replace(/\bsquare\s*\(([^)]+)\)/g, (_, args) => {
+      return `Math.pow(${args}, 2)`;
+    });
+    
+    processed = processed.replace(/\bcube\s*\(([^)]+)\)/g, (_, args) => {
+      return `Math.pow(${args}, 3)`;
+    });
+    
+    processed = processed.replace(/\bpercent\s*\(([^)]+)\)/g, (_, args) => {
+      return `((${args})/100)`;
+    });
+    
+    // Handle trigonometric functions with angle mode conversion
+    if (this.angleMode === 'deg') {
+      processed = processed.replace(/\bsin\s*\(([^)]+)\)/g, (_, args) => {
+        return `Math.sin((${args}) * Math.PI / 180)`;
+      });
+      processed = processed.replace(/\bcos\s*\(([^)]+)\)/g, (_, args) => {
+        return `Math.cos((${args}) * Math.PI / 180)`;
+      });
+      processed = processed.replace(/\btan\s*\(([^)]+)\)/g, (_, args) => {
+        return `Math.tan((${args}) * Math.PI / 180)`;
+      });
+    } else {
+      processed = processed.replace(/\bsin\s*\(([^)]+)\)/g, (_, args) => {
+        return `Math.sin(${args})`;
+      });
+      processed = processed.replace(/\bcos\s*\(([^)]+)\)/g, (_, args) => {
+        return `Math.cos(${args})`;
+      });
+      processed = processed.replace(/\btan\s*\(([^)]+)\)/g, (_, args) => {
+        return `Math.tan(${args})`;
+      });
+    }
+    
+    // Handle other Math functions
+    for (const [funcName] of Object.entries(this.functions)) {
+      if (['factorial', 'reciprocal', 'square', 'cube', 'percent', 'sin', 'cos', 'tan'].includes(funcName)) {
+        continue; // Already handled above
+      }
+      
+      const regex = new RegExp(`\\b${funcName}\\s*\\(([^)]+)\\)`, 'g');
+      processed = processed.replace(regex, (_, args) => {
+        if (!this.isValidFunctionArgs(args)) {
+          throw new Error(`Invalid arguments for ${funcName}`);
+        }
+        return `Math.${this.getMathEquivalent(funcName)}(${args})`;
+      });
+    }
+    
+    return processed;
+  }
+
+  // Get Math object equivalent for custom functions
+  getMathEquivalent(funcName) {
+    const mathMapping = {
+      'sin': 'sin', 'cos': 'cos', 'tan': 'tan',
+      'asin': 'asin', 'acos': 'acos', 'atan': 'atan',
+      'log': 'log', 'log10': 'log10', 'log2': 'log2',
+      'sqrt': 'sqrt', 'cbrt': 'cbrt', 'exp': 'exp',
+      'abs': 'abs', 'ceil': 'ceil', 'floor': 'floor', 'round': 'round',
+      'pow': 'pow'
+    };
+    return mathMapping[funcName] || funcName;
+  }
+
+  // Validate function arguments
+  isValidFunctionArgs(args) {
+    if (!args || typeof args !== 'string') {
+      return false;
+    }
+    // Basic validation for function arguments - allow numbers, operators, parentheses, decimals, spaces, and commas
+    return /^[0-9+\-*/().\s,]*$/.test(args.trim());
+  }
+
+  // Safer evaluation method
+  safeEvaluate(expression) {
+    // Only allow basic math operations and Math object methods
+    const allowedPattern = /^[0-9+\-*/().\s,Math.sincostalogqrtbcexpfloorundefinedPI*]*$/;
+    if (!allowedPattern.test(expression)) {
+      throw new Error('Expression contains invalid characters');
+    }
+    
+    // Use Function constructor with restricted scope
+    return new Function('Math', `"use strict"; return ${expression}`)(Math);
+  }
+
+  // Validate expression to prevent code injection and ensure correctness
+  isValidExpression(expression) {
+    // Allow numbers, operators, parentheses, Math functions, and constants
+    const validPattern = /^[0-9+\-*/().\s,Math.sincostalogqrtbcexpfloorundefinedPI*]*$/;
     
     // Check for balanced parentheses
     if (!this.hasBalancedParentheses(expression)) {
@@ -143,12 +234,17 @@ export class Calculator {
     }
     
     // Check for valid pattern
-    if (!validPattern.test(cleanExpression)) {
+    if (!validPattern.test(expression)) {
       return false;
     }
     
-    // Check for consecutive operators (basic validation)
-    if (/([+\-*/]{2,})/.test(cleanExpression)) {
+    // Check for consecutive operators (but allow ** for power)
+    if (/([+\-*/]{3,})/.test(expression)) {
+      return false;
+    }
+    
+    // Check for invalid sequences (but allow ** for power)
+    if (/[+\-*/]{1}[+*/]/.test(expression) && !/\*\*/.test(expression)) {
       return false;
     }
     
@@ -157,7 +253,7 @@ export class Calculator {
 
   hasBalancedParentheses(expression) {
     let count = 0;
-    for (let char of expression) {
+    for (const char of expression) {
       if (char === '(') count++;
       if (char === ')') count--;
       if (count < 0) return false;
@@ -165,53 +261,58 @@ export class Calculator {
     return count === 0;
   }
 
+  /**
+   * Handle calculator actions (button clicks, keyboard input)
+   * @param {string} action - The action to perform
+   * @returns {Object|null} - Calculation result or null for non-calculation actions
+   */
   handleAction(action) {
     switch (action) {
-      case 'clear':
-        this.clear();
-        break;
-      case 'ce':
-        this.clearEntry();
-        break;
-      case 'backspace':
-        this.backspace();
-        break;
-      case 'equals':
-        return this.calculate();
-      case 'ans':
-        if (this.lastResult !== null) {
-          this.appendNumber(this.lastResult.toString());
-        }
-        break;
-      case 'memory-clear':
-        this.memory = 0;
-        break;
-      case 'memory-recall':
-        this.appendNumber(this.memory.toString());
-        break;
-      case 'memory-add':
-        this.memory += this.lastResult || 0;
-        break;
-      case 'memory-subtract':
-        this.memory -= this.lastResult || 0;
-        break;
-      case 'random':
-        const random = Math.random();
-        this.appendNumber(random.toString());
-        break;
-      case 'negate':
-        this.negate();
-        break;
-      default:
-        if (this.isNumber(action)) {
-          this.appendNumber(action);
-        } else if (this.isOperator(action)) {
-          this.appendOperator(action);
-        } else if (this.isFunction(action)) {
-          this.appendFunction(action);
-        } else if (this.isConstant(action)) {
-          this.appendConstant(action);
-        }
+    case 'clear':
+      this.clear();
+      break;
+    case 'ce':
+      this.clearEntry();
+      break;
+    case 'backspace':
+      this.backspace();
+      break;
+    case 'equals':
+      return this.calculate();
+    case 'ans':
+      if (this.lastResult !== null) {
+        this.appendNumber(this.lastResult.toString());
+      }
+      break;
+    case 'memory-clear':
+      this.memory = 0;
+      break;
+    case 'memory-recall':
+      this.appendNumber(this.memory.toString());
+      break;
+    case 'memory-add':
+      this.memory += this.lastResult || 0;
+      break;
+    case 'memory-subtract':
+      this.memory -= this.lastResult || 0;
+      break;
+    case 'random':
+      const random = Math.random();
+      this.appendNumber(random.toString());
+      break;
+    case 'negate':
+      this.negate();
+      break;
+    default:
+      if (this.isNumber(action)) {
+        this.appendNumber(action);
+      } else if (this.isOperator(action)) {
+        this.appendOperator(action);
+      } else if (this.isFunction(action)) {
+        this.appendFunction(action);
+      } else if (this.isConstant(action)) {
+        this.appendConstant(action);
+      }
     }
     
     this.updateDisplay();
@@ -235,13 +336,19 @@ export class Calculator {
   }
 
   appendNumber(number) {
+    if (typeof number !== 'string') {
+      number = String(number);
+    }
+    
     if (this.isNewExpression) {
       this.expression = number;
       this.result = ''; // Clear the result when starting new expression
       this.isNewExpression = false;
     } else {
-      // Prevent multiple decimal points
-      if (number === '.' && this.expression.includes('.')) {
+      // Prevent multiple decimal points in the current number
+      const lastNumberMatch = this.expression.match(/[0-9.]+$/);
+      const currentNumber = lastNumberMatch ? lastNumberMatch[0] : '';
+      if (number === '.' && currentNumber.includes('.')) {
         return;
       }
       // Prevent leading zeros (except for decimal numbers)
@@ -361,6 +468,9 @@ export class Calculator {
   }
 
   setExpression(expression) {
+    if (typeof expression !== 'string') {
+      expression = String(expression);
+    }
     this.expression = expression;
     this.isNewExpression = false;
     this.updateDisplay();
