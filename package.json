@@ -15,10 +15,10 @@
     "build": "npm run build:js && npm run build:assets",
     "build:js": "npx rollup -c",
     "build:assets": "npm run copy:html && npm run copy:css && npm run copy:assets",
-    "copy:html": "copy index.html dist\\ && powershell -Command \"(Get-Content dist\\index.html) -replace 'type=\\\"module\\\" src=\\\"js/main.js\\\"', 'src=\\\"bundle.js\\\"' | Set-Content dist\\index.html\"",
-    "copy:css": "xcopy styles dist\\styles\\ /E /I /Y",
-    "copy:assets": "copy calculator.ico dist\\ && copy LICENSE dist\\ && copy Readme.md dist\\",
-    "clean": "if exist dist rmdir /s /q dist && mkdir dist",
+    "copy:html": "npx cpx2 index.html dist && node scripts/fix-html.js",
+    "copy:css": "npx cpx2 \"styles/**/*\" dist/styles",
+    "copy:assets": "npx cpx2 \"{calculator.ico,LICENSE,Readme.md}\" dist",
+    "clean": "rimraf dist",
     "serve": "npx http-server dist -p 8080"
   },
   "keywords": [
@@ -39,14 +39,15 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "babel-jest": "^30.2.0",
+    "cpx2": "^8.0.0",
     "eslint": "^8.50.0",
     "http-server": "^14.1.1",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "live-server": "^1.2.2",
+    "rimraf": "^6.1.0",
     "rollup": "^4.0.0"
   },
-  "dependencies": {},
   "jest": {
     "testEnvironment": "jsdom",
     "transform": {
