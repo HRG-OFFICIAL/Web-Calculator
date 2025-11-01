@@ -7,11 +7,18 @@
   "scripts": {
     "start": "npx http-server . -p 3000 -o",
     "dev": "npx live-server --port=3000 --open=/",
-    "test": "npx jest",
+    "test": "npx jest --run",
     "test:watch": "npx jest --watch",
     "lint": "npx eslint js/**/*.js",
     "lint:fix": "npx eslint js/**/*.js --fix",
-    "build": "npx rollup -c",
+    "prebuild": "npm run clean",
+    "build": "npm run build:js && npm run build:assets",
+    "build:js": "npx rollup -c",
+    "build:assets": "npm run copy:html && npm run copy:css && npm run copy:assets",
+    "copy:html": "copy index.html dist\\",
+    "copy:css": "xcopy styles dist\\styles\\ /E /I /Y",
+    "copy:assets": "copy calculator.ico dist\\ && copy LICENSE dist\\ && copy Readme.md dist\\",
+    "clean": "if exist dist rmdir /s /q dist && mkdir dist",
     "serve": "npx http-server dist -p 8080"
   },
   "keywords": [
