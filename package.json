@@ -15,7 +15,7 @@
     "build": "npm run build:js && npm run build:assets",
     "build:js": "npx rollup -c",
     "build:assets": "npm run copy:html && npm run copy:css && npm run copy:assets",
-    "copy:html": "copy index.html dist\\",
+    "copy:html": "copy index.html dist\\ && powershell -Command \"(Get-Content dist\\index.html) -replace 'type=\\\"module\\\" src=\\\"js/main.js\\\"', 'src=\\\"bundle.js\\\"' | Set-Content dist\\index.html\"",
     "copy:css": "xcopy styles dist\\styles\\ /E /I /Y",
     "copy:assets": "copy calculator.ico dist\\ && copy LICENSE dist\\ && copy Readme.md dist\\",
     "clean": "if exist dist rmdir /s /q dist && mkdir dist",

@@ -5,12 +5,12 @@ export class ThemeManager {
     this.themes = {
       light: {
         name: 'Light',
-        icon: '☀️',
+        icon: '◑',
         description: 'Light theme with bright colors'
       },
       dark: {
         name: 'Dark',
-        icon: '🌙',
+        icon: '◐',
         description: 'Dark theme with dark colors'
       }
     };

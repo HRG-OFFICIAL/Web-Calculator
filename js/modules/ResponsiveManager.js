@@ -276,6 +276,7 @@ export class ResponsiveManager {
     
     // Apply grid configuration
     buttons.style.gridTemplateColumns = `repeat(${calcConfig.gridColumns}, 1fr)`;
+    buttons.style.gridTemplateRows = `repeat(9, minmax(35px, 1fr))`;
     buttons.style.padding = calcConfig.padding;
     buttons.style.gap = calcConfig.gap;
     
