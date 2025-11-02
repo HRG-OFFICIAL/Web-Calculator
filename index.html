@@ -17,7 +17,7 @@
           <span class="theme-toggle__icon">◐</span>
         </button>
         <button class="history-toggle" aria-label="Toggle history panel" title="Toggle history">
-          <span class="history-toggle__icon">⧖</span>
+          <span class="history-toggle__icon">⟲</span>
         </button>
       </div>
     </header>
@@ -37,70 +37,78 @@
           <div class="calculator__result" aria-live="assertive"></div>
           </div>
         
-        <div class="calculator__buttons" role="grid" aria-label="Calculator buttons">
-          <!-- Row 1: Scientific Functions -->
-          <button class="btn btn--function" data-action="sin" aria-label="Sine function">sin</button>
-          <button class="btn btn--function" data-action="cos" aria-label="Cosine function">cos</button>
-          <button class="btn btn--function" data-action="tan" aria-label="Tangent function">tan</button>
-          <button class="btn btn--function" data-action="log" aria-label="Natural logarithm">ln</button>
-          <button class="btn btn--function" data-action="log10" aria-label="Base 10 logarithm">log</button>
+        <div class="calculator__buttons-container">
+          <!-- Advanced Functions Toggle (Mobile Only) -->
+          <button class="calculator__advanced-toggle" id="advanced-toggle" aria-label="Toggle advanced functions" aria-expanded="false">
+            <span class="advanced-toggle__icon">⚙</span>
+            <span class="advanced-toggle__text">Advanced</span>
+          </button>
           
-          <!-- Row 2: Parentheses and Powers -->
-          <button class="btn btn--operator" data-action="(" aria-label="Open parenthesis">(</button>
-          <button class="btn btn--operator" data-action=")" aria-label="Close parenthesis">)</button>
-          <button class="btn btn--function" data-action="factorial" aria-label="Factorial">x!</button>
-          <button class="btn btn--function" data-action="square" aria-label="Square">x²</button>
-          <button class="btn btn--function" data-action="cube" aria-label="Cube">x³</button>
-          
-          <!-- Row 3: Special Functions and Constants -->
-          <button class="btn btn--function" data-action="reciprocal" aria-label="Reciprocal"><span class="math-frac">1/x</span></button>
-          <button class="btn btn--constant" data-action="pi" aria-label="Pi constant">π</button>
-          <button class="btn btn--constant" data-action="e" aria-label="Euler's number">e</button>
-          <button class="btn btn--function" data-action="pow" aria-label="Power"><span class="math-sup">x<sup>y</sup></span></button>
-          <button class="btn btn--function" data-action="exp" aria-label="Exponential">exp</button>
-          
-          <!-- Row 4: Additional Functions and Operators -->
-          <button class="btn btn--function" data-action="sqrt" aria-label="Square root">√</button>
-          <button class="btn btn--function" data-action="cbrt" aria-label="Cube root">∛</button>
-          <button class="btn btn--function" data-action="abs" aria-label="Absolute value">|x|</button>
-          <button class="btn btn--function" data-action="negate" aria-label="Change sign">±</button>
-          <button class="btn btn--operator" data-action="^" aria-label="Power operator">^</button>
-          
-          <!-- Row 5: Random and Control -->
-          <button class="btn btn--control" data-action="random" aria-label="Random number">Rand</button>
-          <button class="btn btn--control" data-action="clear" aria-label="Clear all">AC</button>
-          <button class="btn btn--control" data-action="ce" aria-label="Clear entry">CE</button>
-          <button class="btn btn--control" data-action="backspace" aria-label="Backspace">⌫</button>
-          <button class="btn btn--operator" data-action="/" aria-label="Division">÷</button>
-          
-          <!-- Row 6: Answer and Numbers -->
-          <button class="btn btn--control" data-action="ans" aria-label="Previous answer">Ans</button>
-          <button class="btn btn--number" data-action="7" aria-label="Seven">7</button>
-          <button class="btn btn--number" data-action="8" aria-label="Eight">8</button>
-          <button class="btn btn--number" data-action="9" aria-label="Nine">9</button>
-          <button class="btn btn--operator" data-action="*" aria-label="Multiplication">×</button>
-          
-          <!-- Row 7: Memory and Numbers -->
-          <button class="btn btn--memory" data-action="memory-clear" aria-label="Memory clear">MC</button>
-          <button class="btn btn--number" data-action="4" aria-label="Four">4</button>
-          <button class="btn btn--number" data-action="5" aria-label="Five">5</button>
-          <button class="btn btn--number" data-action="6" aria-label="Six">6</button>
-          <button class="btn btn--operator" data-action="-" aria-label="Subtraction">−</button>
-          
-          <!-- Row 8: Memory and Numbers -->
-          <button class="btn btn--memory" data-action="memory-recall" aria-label="Memory recall">MR</button>
-          <button class="btn btn--number" data-action="1" aria-label="One">1</button>
-          <button class="btn btn--number" data-action="2" aria-label="Two">2</button>
-          <button class="btn btn--number" data-action="3" aria-label="Three">3</button>
-          <button class="btn btn--operator" data-action="+" aria-label="Addition">+</button>
-          
-          <!-- Row 9: Memory and Zero -->
-          <button class="btn btn--memory" data-action="memory-add" aria-label="Memory add">M+</button>
-          <button class="btn btn--memory" data-action="memory-subtract" aria-label="Memory subtract">M−</button>
-          <button class="btn btn--number" data-action="0" aria-label="Zero">0</button>
-          <button class="btn btn--function" data-action="." aria-label="Decimal point">.</button>
-          <button class="btn btn--equals" data-action="equals" aria-label="Equals">=</button>
+          <div class="calculator__buttons" role="grid" aria-label="Calculator buttons">
+            <!-- Row 1: Scientific Functions -->
+            <button class="btn btn--function" data-action="sin" aria-label="Sine function">sin</button>
+            <button class="btn btn--function" data-action="cos" aria-label="Cosine function">cos</button>
+            <button class="btn btn--function" data-action="tan" aria-label="Tangent function">tan</button>
+            <button class="btn btn--function" data-action="log" aria-label="Natural logarithm">ln</button>
+            <button class="btn btn--function" data-action="log10" aria-label="Base 10 logarithm">log</button>
+            
+            <!-- Row 2: Parentheses and Powers -->
+            <button class="btn btn--operator" data-action="(" aria-label="Open parenthesis">(</button>
+            <button class="btn btn--operator" data-action=")" aria-label="Close parenthesis">)</button>
+            <button class="btn btn--function" data-action="factorial" aria-label="Factorial">x!</button>
+            <button class="btn btn--function" data-action="square" aria-label="Square">x²</button>
+            <button class="btn btn--function" data-action="cube" aria-label="Cube">x³</button>
+            
+            <!-- Row 3: Special Functions and Constants -->
+            <button class="btn btn--function" data-action="reciprocal" aria-label="Reciprocal"><span class="math-frac">1/x</span></button>
+            <button class="btn btn--constant" data-action="pi" aria-label="Pi constant">π</button>
+            <button class="btn btn--constant" data-action="e" aria-label="Euler's number">e</button>
+            <button class="btn btn--function" data-action="pow" aria-label="Power"><span class="math-sup">x<sup>y</sup></span></button>
+            <button class="btn btn--function" data-action="exp" aria-label="Exponential">exp</button>
+            
+            <!-- Row 4: Additional Functions and Operators -->
+            <button class="btn btn--function" data-action="sqrt" aria-label="Square root">√</button>
+            <button class="btn btn--function" data-action="cbrt" aria-label="Cube root">∛</button>
+            <button class="btn btn--function" data-action="abs" aria-label="Absolute value">|x|</button>
+            <button class="btn btn--function" data-action="negate" aria-label="Change sign">±</button>
+            <button class="btn btn--operator" data-action="^" aria-label="Power operator">^</button>
+            
+            <!-- Row 5: Random and Control -->
+            <button class="btn btn--control" data-action="random" aria-label="Random number">Rand</button>
+            <button class="btn btn--control" data-action="clear" aria-label="Clear all">AC</button>
+            <button class="btn btn--control" data-action="ce" aria-label="Clear entry">CE</button>
+            <button class="btn btn--control" data-action="backspace" aria-label="Backspace">⌫</button>
+            <button class="btn btn--operator" data-action="/" aria-label="Division">÷</button>
+            
+            <!-- Row 6: Answer and Numbers -->
+            <button class="btn btn--control" data-action="ans" aria-label="Previous answer">Ans</button>
+            <button class="btn btn--number" data-action="7" aria-label="Seven">7</button>
+            <button class="btn btn--number" data-action="8" aria-label="Eight">8</button>
+            <button class="btn btn--number" data-action="9" aria-label="Nine">9</button>
+            <button class="btn btn--operator" data-action="*" aria-label="Multiplication">×</button>
+            
+            <!-- Row 7: Memory and Numbers -->
+            <button class="btn btn--memory" data-action="memory-clear" aria-label="Memory clear">MC</button>
+            <button class="btn btn--number" data-action="4" aria-label="Four">4</button>
+            <button class="btn btn--number" data-action="5" aria-label="Five">5</button>
+            <button class="btn btn--number" data-action="6" aria-label="Six">6</button>
+            <button class="btn btn--operator" data-action="-" aria-label="Subtraction">−</button>
+            
+            <!-- Row 8: Memory and Numbers -->
+            <button class="btn btn--memory" data-action="memory-recall" aria-label="Memory recall">MR</button>
+            <button class="btn btn--number" data-action="1" aria-label="One">1</button>
+            <button class="btn btn--number" data-action="2" aria-label="Two">2</button>
+            <button class="btn btn--number" data-action="3" aria-label="Three">3</button>
+            <button class="btn btn--operator" data-action="+" aria-label="Addition">+</button>
+            
+            <!-- Row 9: Memory and Zero -->
+            <button class="btn btn--memory" data-action="memory-add" aria-label="Memory add">M+</button>
+            <button class="btn btn--memory" data-action="memory-subtract" aria-label="Memory subtract">M−</button>
+            <button class="btn btn--number" data-action="0" aria-label="Zero">0</button>
+            <button class="btn btn--function" data-action="." aria-label="Decimal point">.</button>
+            <button class="btn btn--equals" data-action="equals" aria-label="Equals">=</button>
           </div>
+        </div>
         </div>
     </main>
     

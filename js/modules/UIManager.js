@@ -224,7 +224,7 @@ export class UIManager {
       
       // Update icon based on visibility state
       if (iconElement) {
-        iconElement.textContent = this.isHistoryVisible ? '📋' : '📝';
+        iconElement.textContent = this.isHistoryVisible ? '⟲' : '⟲';
       }
     }
   }
